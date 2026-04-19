@@ -6,13 +6,16 @@ import { canManageRoles } from "@/lib/permissions";
 import { updateProkerSchema } from "@/lib/validation";
 import { eq } from "drizzle-orm";
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: Request, { params }: RouteContext) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const proker = await db.query.prokers.findFirst({
-    where: eq(prokers.id, params.id),
+    where: eq(prokers.id, id),
     with: {
       division: true,
       period: true,
@@ -25,7 +28,8 @@ export async function GET(_request: Request, { params }: { params: { id: string 
   return NextResponse.json({ proker });
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: RouteContext) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -36,22 +40,23 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  await db.update(prokers).set(parsed.data as any).where(eq(prokers.id, params.id));
+  await db.update(prokers).set(parsed.data as any).where(eq(prokers.id, id));
 
   const proker = await db.query.prokers.findFirst({
-    where: eq(prokers.id, params.id),
+    where: eq(prokers.id, id),
     with: { division: true, period: true, panitia: { with: { user: true } } },
   });
 
   return NextResponse.json({ proker });
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  await db.delete(prokers).where(eq(prokers.id, params.id));
+  await db.delete(prokers).where(eq(prokers.id, id));
 
   return NextResponse.json({ ok: true });
 }

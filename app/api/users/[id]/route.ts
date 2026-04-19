@@ -7,13 +7,16 @@ import { canManageRoles } from "@/lib/permissions";
 import { updateUserSchema } from "@/lib/validation";
 import { eq } from "drizzle-orm";
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_request: Request, { params }: RouteContext) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const user = await db.query.users.findFirst({
-    where: eq(users.id, params.id),
+    where: eq(users.id, id),
     with: { period: true, division: true },
   });
 
@@ -22,7 +25,8 @@ export async function GET(_request: Request, { params }: { params: { id: string 
   return NextResponse.json({ user });
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: RouteContext) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -39,22 +43,23 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     data.passwordHash = await bcrypt.hash(password, 10);
   }
 
-  await db.update(users).set(data as any).where(eq(users.id, params.id));
+  await db.update(users).set(data as any).where(eq(users.id, id));
 
   const user = await db.query.users.findFirst({
-    where: eq(users.id, params.id),
+    where: eq(users.id, id),
     with: { period: true, division: true },
   });
 
   return NextResponse.json({ user });
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  await db.delete(users).where(eq(users.id, params.id));
+  await db.delete(users).where(eq(users.id, id));
 
   return NextResponse.json({ ok: true });
 }

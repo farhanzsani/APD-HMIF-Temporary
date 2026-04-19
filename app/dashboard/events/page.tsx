@@ -82,7 +82,12 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
       });
 
       // Generate assignments (uses global db, but run after TX is committed for safety or if TX passed)
-      await generateAssignmentsForEvent({ id: newId, type: type as "PERIODIC" | "PROKER", periodId, prokerId });
+      await generateAssignmentsForEvent({
+        id: newId,
+        type: type as "PERIODIC" | "PROKER",
+        periodId,
+        prokerId: type === "PROKER" ? (prokerId ?? null) : null,
+      });
 
       revalidatePath("/dashboard/events");
       redirect(`/dashboard/events?success=${encodeURIComponent("Event dibuat")}&alert=success`);
