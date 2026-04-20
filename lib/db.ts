@@ -1,6 +1,9 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import dotenv from "dotenv";
 import * as schema from "@/lib/schema";
+
+dotenv.config({ override: true });
 
 const globalForDb = globalThis as unknown as {
     conn: ReturnType<typeof postgres> | undefined;
