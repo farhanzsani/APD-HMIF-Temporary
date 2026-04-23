@@ -272,7 +272,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
                         <option value="">(Kosongkan jika periodik)</option>
                         {prokersData.map((pr) => (
                           <option key={pr.id} value={pr.id}>
-                            {pr.name} · {pr.period.name}
+                            {pr.name} · {pr.period?.name ?? "-"}
                           </option>
                         ))}
                       </select>
@@ -368,7 +368,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
                         <TableRow key={ev.id}>
                           <TableCell className="pl-4 font-medium">{ev.name}</TableCell>
                           <TableCell className="text-muted-foreground">{ev.type === "PROKER" ? "Proker" : "Periodik"}</TableCell>
-                          <TableCell className="text-muted-foreground">{ev.period.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{ev.period?.name ?? "-"}</TableCell>
                           <TableCell className="text-muted-foreground">{ev.proker?.name ?? "-"}</TableCell>
                           <TableCell className="text-muted-foreground">
                             {new Date(ev.startDate).toLocaleDateString()} - {new Date(ev.endDate).toLocaleDateString()}

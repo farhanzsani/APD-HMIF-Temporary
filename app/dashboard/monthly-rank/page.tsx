@@ -30,6 +30,11 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
             : Promise.resolve(null),
     ]);
 
+    const sidebarStyle = {
+        "--sidebar-width": "calc(var(--spacing) * 72)",
+        "--header-height": "calc(var(--spacing) * 12)",
+    } as React.CSSProperties;
+
     const periodId = activePeriod?.id ?? session.periodId;
     const availableMonths = await getAvailableMonths(periodId);
 
@@ -39,14 +44,29 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
 
     const report = await getMonthlyRank(selectedMonth, selectedYear, periodId, session);
 
+    if (!report) {
+        return (
+            <SidebarShell
+                user={currentUser ? { name: currentUser.name, email: currentUser.email ?? undefined } : undefined}
+                sidebarStyle={sidebarStyle}
+            >
+                <SiteHeader title="Monthly Rank" activePeriod={activePeriod?.name ?? "-"} />
+                <div className="flex flex-1 items-center justify-center p-10 text-center">
+                    <p className="text-muted-foreground">Gagal memuat data ranking. Silakan coba lagi nanti.</p>
+                </div>
+            </SidebarShell>
+        );
+    }
+
     // Pagination
     const PAGE_SIZE = 10;
     const currentPage = params.page ? Math.max(1, parseInt(params.page)) : 1;
-    const totalItems = report.rankings.length;
+    const rankings = report?.rankings ?? [];
+    const totalItems = rankings.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
     const safePage = Math.min(currentPage, totalPages);
     const startIndex = (safePage - 1) * PAGE_SIZE;
-    const paginatedRankings = report.rankings.slice(startIndex, startIndex + PAGE_SIZE);
+    const paginatedRankings = rankings.slice(startIndex, startIndex + PAGE_SIZE);
 
     const monthNames = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -62,10 +82,7 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
     // Merge available + all months list
     const displayMonths = allMonths;
 
-    const sidebarStyle = {
-        "--sidebar-width": "calc(var(--spacing) * 72)",
-        "--header-height": "calc(var(--spacing) * 12)",
-    } as React.CSSProperties;
+    // sidebarStyle moved up
 
 
     function getRankBadge(rank: number) {
@@ -75,7 +92,8 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
         return "";
     }
 
-    function getScoreColor(score: number) {
+    function getScoreColor(score: number | undefined | null) {
+        if (!score) return "text-muted-foreground";
         if (score >= 4) return "text-emerald-600";
         if (score >= 3) return "text-blue-600";
         if (score >= 2) return "text-amber-600";
@@ -145,25 +163,25 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
                         <Card className="border-l-4 border-l-blue-500">
                             <CardContent className="p-4">
                                 <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Total Dinilai</p>
-                                <p className="text-2xl font-semibold tabular-nums">{report.totalEvaluated}</p>
+                                <p className="text-2xl font-semibold tabular-nums">{report?.totalEvaluated ?? 0}</p>
                             </CardContent>
                         </Card>
                         <Card className="border-l-4 border-l-emerald-500">
                             <CardContent className="p-4">
                                 <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Rata-rata Skor</p>
-                                <p className="text-2xl font-semibold tabular-nums">{report.averageScore.toFixed(2)}</p>
+                                <p className="text-2xl font-semibold tabular-nums">{(report?.averageScore ?? 0).toFixed(2)}</p>
                             </CardContent>
                         </Card>
                         <Card className="border-l-4 border-l-amber-500">
                             <CardContent className="p-4">
                                 <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Skor Tertinggi</p>
-                                <p className="text-2xl font-semibold tabular-nums">{report.highestScore.toFixed(2)}</p>
+                                <p className="text-2xl font-semibold tabular-nums">{(report?.highestScore ?? 0).toFixed(2)}</p>
                             </CardContent>
                         </Card>
                         <Card className="border-l-4 border-l-red-500">
                             <CardContent className="p-4">
                                 <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">Skor Terendah</p>
-                                <p className="text-2xl font-semibold tabular-nums">{report.lowestScore.toFixed(2)}</p>
+                                <p className="text-2xl font-semibold tabular-nums">{(report?.lowestScore ?? 0).toFixed(2)}</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -174,10 +192,10 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
                             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <CardTitle className="text-lg">
-                                        Ranking Bulan {report.monthLabel}
+                                        Ranking Bulan {report?.monthLabel ?? "-"}
                                     </CardTitle>
                                     <p className="text-muted-foreground text-sm">
-                                        Periode: {report.periodName} · {totalItems} anggota · Halaman {safePage} dari {totalPages}
+                                        Periode: {report?.periodName ?? "-"} · {totalItems} anggota · Halaman {safePage} dari {totalPages}
                                     </p>
                                 </div>
                                 {availableMonths.length > 0 && (
@@ -188,10 +206,10 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
                             </div>
                         </CardHeader>
                         <CardContent className="p-0">
-                            {report.rankings.length === 0 ? (
+                            {rankings.length === 0 ? (
                                 <div className="px-4 py-10 text-center">
                                     <p className="text-muted-foreground text-sm">
-                                        Belum ada data penilaian untuk bulan {report.monthLabel}.
+                                        Belum ada data penilaian untuk bulan {report?.monthLabel ?? "-"}.
                                     </p>
                                     <p className="text-muted-foreground text-xs mt-1">
                                         Pastikan event evaluasi sudah berjalan dan ada submission pada bulan ini.
@@ -333,17 +351,17 @@ export default async function MonthlyRankPage({ searchParams }: PageProps) {
                     </Card>
 
                     {/* Top 3 Highlight */}
-                    {report.rankings.length >= 3 && (
+                    {rankings.length >= 3 && (
                         <Card className="border-primary/10 bg-gradient-to-br from-amber-50/50 via-background to-background dark:from-amber-950/10">
                             <CardHeader>
                                 <CardTitle className="text-lg">3 Manusia Keren Bulan Ini</CardTitle>
                                 <p className="text-muted-foreground text-sm">
-                                    Anggota dengan performa terbaik pada {report.monthLabel}
+                                    Anggota dengan performa terbaik pada {report?.monthLabel ?? "-"}
                                 </p>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid gap-4 sm:grid-cols-3">
-                                    {report.rankings.slice(0, 3).map((entry, idx) => {
+                                    {rankings.slice(0, 3).map((entry, idx) => {
                                         const medals = ["🥇", "🥈", "🥉"];
                                         const borderColors = [
                                             "border-amber-400/50 bg-amber-50/30 dark:bg-amber-950/20",

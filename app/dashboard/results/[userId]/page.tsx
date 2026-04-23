@@ -36,7 +36,24 @@ export default async function MemberDetailPage({ params, searchParams }: PagePro
             : Promise.resolve(null),
     ]);
 
+    const sidebarStyle = {
+        "--sidebar-width": "calc(var(--spacing) * 72)",
+        "--header-height": "calc(var(--spacing) * 12)",
+    } as React.CSSProperties;
+
     const report = await getEventReport(eventId, session);
+
+    if (!report || !report.results || !report.event) {
+        return (
+            <SidebarShell user={currentUser ? { name: currentUser?.name, email: currentUser?.email ?? undefined } : undefined} sidebarStyle={sidebarStyle}>
+                <SiteHeader title="Hasil & Laporan" activePeriod={activePeriod?.name ?? "-"} />
+                <div className="flex flex-1 items-center justify-center p-10 text-center">
+                    <p className="text-muted-foreground">Laporan tidak ditemukan.</p>
+                </div>
+            </SidebarShell>
+        );
+    }
+
     const memberResult = report.results.find((r) => r.evaluateeId === userId);
 
     if (!memberResult) notFound();
@@ -44,11 +61,11 @@ export default async function MemberDetailPage({ params, searchParams }: PagePro
     const dateFmt = new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" });
     const typeLabel = report.event.type === "PROKER" ? "Event Proker" : "Event Periodik";
 
-    const hardIndicators = memberResult.indicators.filter((i) => i.category === "hardskill");
-    const softIndicators = memberResult.indicators.filter((i) => i.category === "softskill");
+    const hardIndicators = memberResult.indicators?.filter((i: any) => i.category === "hardskill") ?? [];
+    const softIndicators = memberResult.indicators?.filter((i: any) => i.category === "softskill") ?? [];
 
     return (
-        <SidebarShell user={currentUser ? { name: currentUser.name, email: currentUser.email ?? undefined } : undefined}>
+        <SidebarShell user={currentUser ? { name: currentUser.name, email: currentUser.email ?? undefined } : undefined} sidebarStyle={sidebarStyle}>
             <SiteHeader title="Hasil & Laporan" activePeriod={activePeriod?.name ?? "-"} />
             <div className="flex flex-1 flex-col">
                 <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
