@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     periodId,
     divisionId: divisionId ?? null,
     passwordHash,
-    isActive: isActive ?? true,
+    isActive: isActive != null ? (isActive ? 1 : 0) : 1,
     createdAt: new Date(),
   });
 

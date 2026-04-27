@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     id,
     name: parsed.data.name,
     category: parsed.data.category,
-    isActive: parsed.data.isActive ?? true,
+    isActive: parsed.data.isActive != null ? (parsed.data.isActive ? 1 : 0) : 1,
     createdAt: new Date(),
   });
 

@@ -143,10 +143,10 @@ export default async function ProkersPage({ searchParams }: ProkersPageProps) {
   }
 
   const [activePeriod, periodsData, divisionsData, usersData, prokersData, currentUser] = await Promise.all([
-    db.query.periods.findFirst({ where: eq(periods.isActive, true), orderBy: [desc(periods.startYear)] }),
+    db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.query.periods.findMany({ orderBy: [desc(periods.startYear)] }),
     db.query.divisions.findMany({ orderBy: [asc(divisions.name)] }),
-    db.query.users.findMany({ where: eq(usersTable.isActive, true), orderBy: [asc(usersTable.name)], with: { division: true } }),
+    db.query.users.findMany({ where: eq(usersTable.isActive, 1), orderBy: [asc(usersTable.name)], with: { division: true } }),
     db.query.prokers.findMany({
       orderBy: [asc(prokersTable.name)],
       with: {

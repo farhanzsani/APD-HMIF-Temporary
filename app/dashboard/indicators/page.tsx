@@ -44,7 +44,7 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
     const raw = {
       name: String(formData.get("name") ?? ""),
       category: String(formData.get("category") ?? "hard"),
-      isActive: formData.get("isActive") === "on",
+      isActive: formData.get("isActive") === "on" ? 1 : 0,
     };
     const parsed = createIndicatorSchema.safeParse(raw);
     if (!parsed.success) throw new Error("Input tidak valid");
@@ -64,7 +64,7 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
     const raw = {
       name: String(formData.get("name") ?? ""),
       category: String(formData.get("category") ?? "hard"),
-      isActive: formData.get("isActive") === "on",
+      isActive: formData.get("isActive") === "on" ? 1 : 0,
     };
     const parsed = updateIndicatorSchema.safeParse(raw);
     if (!parsed.success) throw new Error("Input tidak valid");
@@ -95,7 +95,7 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
   }
 
   const [activePeriod, indicatorsData, currentUser] = await Promise.all([
-    db.query.periods.findFirst({ where: eq(periods.isActive, true), orderBy: [desc(periods.startYear)] }),
+    db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.select().from(indicatorsTable).orderBy(asc(indicatorsTable.category), asc(indicatorsTable.name)),
     session.userId ? db.query.users.findFirst({ where: eq(users.id, session.userId), columns: { name: true, email: true } }) : Promise.resolve(null),
   ]);
@@ -107,7 +107,7 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
   const alert = (params?.alert as "success" | "error" | "info") ?? (error ? "error" : "success");
 
   const totalIndicators = indicators.length;
-  const activeIndicators = indicators.filter((i: any) => i.isActive).length;
+  const activeIndicators = indicators.filter((i: any) => !!i.isActive).length;
   const hardCount = indicators.filter((i: any) => i.category === "hard").length;
   const softCount = indicators.filter((i: any) => i.category === "soft").length;
 

@@ -68,7 +68,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
           prokerId: type === "PROKER" ? prokerId : null,
           startDate,
           endDate,
-          isOpen,
+          isOpen: isOpen ? 1 : 0,
         });
 
         if (indicatorIds.length) {
@@ -125,9 +125,9 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
       const hasSubmissions = Number(submissionCountResult[0]?.count ?? 0) > 0;
 
       if (hasSubmissions) {
-        await db.update(evaluationEvents).set({ isOpen: parsed.data.isOpen }).where(eq(evaluationEvents.id, id));
+        await db.update(evaluationEvents).set({ isOpen: parsed.data.isOpen ? 1 : 0 }).where(eq(evaluationEvents.id, id));
       } else {
-        await db.update(evaluationEvents).set(parsed.data).where(eq(evaluationEvents.id, id));
+        await db.update(evaluationEvents).set({ ...parsed.data, isOpen: parsed.data.isOpen ? 1 : 0 }).where(eq(evaluationEvents.id, id));
       }
       revalidatePath("/dashboard/events");
       redirect(`/dashboard/events?success=${encodeURIComponent("Event diperbarui")}&alert=success`);
@@ -171,14 +171,14 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   }
 
   const [activePeriod, periodsData, prokersData, indicatorsData, eventsData, currentUser] = await Promise.all([
-    db.query.periods.findFirst({ where: eq(periods.isActive, true), orderBy: [desc(periods.startYear)] }),
+    db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.query.periods.findMany({ orderBy: [desc(periods.startYear)] }),
     db.query.prokers.findMany({
       orderBy: [asc(prokers.name)],
       with: { period: true }
     }),
     db.query.indicators.findMany({
-      where: eq(indicators.isActive, true),
+      where: eq(indicators.isActive, 1),
       orderBy: [asc(indicators.category), asc(indicators.name)]
     }),
     db.query.evaluationEvents.findMany({
@@ -410,7 +410,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
                                         </label>
                                       </div>
                                       <label className="mt-1 flex items-center gap-2 text-sm text-foreground">
-                                        <input name="isOpen" type="checkbox" defaultChecked={ev.isOpen} className="h-4 w-4 rounded border-border" />
+                                        <input name="isOpen" type="checkbox" defaultChecked={!!ev.isOpen} className="h-4 w-4 rounded border-border" />
                                         Buka
                                       </label>
                                       <Button type="submit" className="mt-1">

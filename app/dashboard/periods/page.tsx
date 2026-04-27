@@ -39,7 +39,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
       name: String(formData.get("name") ?? ""),
       startYear: formData.get("startYear"),
       endYear: formData.get("endYear"),
-      isActive: formData.get("isActive") === "on",
+      isActive: formData.get("isActive") === "on" ? 1 : 0,
     };
 
     const parsed = createPeriodSchema.safeParse(raw);
@@ -47,9 +47,9 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
 
     const { name, startYear, endYear, isActive } = parsed.data;
 
-    if (isActive) await db.update(periods).set({ isActive: false });
+    if (isActive) await db.update(periods).set({ isActive: 0 });
 
-    await db.insert(periods).values({ id: crypto.randomUUID(), name, startYear, endYear, isActive, createdAt: new Date() });
+    await db.insert(periods).values({ id: crypto.randomUUID(), name, startYear, endYear, isActive: isActive ? 1 : 0, createdAt: new Date() });
     revalidatePath("/dashboard/periods");
     redirect(`/dashboard/periods?success=${encodeURIComponent("Periode ditambahkan")}&alert=success`);
   }
@@ -65,7 +65,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
       name: String(formData.get("name") ?? ""),
       startYear: formData.get("startYear"),
       endYear: formData.get("endYear"),
-      isActive: formData.get("isActive") === "on",
+      isActive: formData.get("isActive") === "on" ? 1 : 0,
     };
 
     const parsed = createPeriodSchema.safeParse(raw);
@@ -73,9 +73,9 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
 
     const { name, startYear, endYear, isActive } = parsed.data;
 
-    if (isActive) await db.update(periods).set({ isActive: false });
+    if (isActive) await db.update(periods).set({ isActive: 0 });
 
-    await db.update(periods).set({ name, startYear, endYear, isActive }).where(eq(periods.id, id));
+    await db.update(periods).set({ name, startYear, endYear, isActive: isActive ? 1 : 0 }).where(eq(periods.id, id));
     revalidatePath("/dashboard/periods");
     redirect(`/dashboard/periods?success=${encodeURIComponent("Periode diperbarui")}&alert=success`);
   }
@@ -93,7 +93,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
   }
 
   const [activePeriod, allPeriods, currentUser] = await Promise.all([
-    db.query.periods.findFirst({ where: eq(periods.isActive, true), orderBy: [desc(periods.startYear)] }),
+    db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.select().from(periods).orderBy(desc(periods.startYear)),
     session.userId ? db.query.users.findFirst({ where: eq(users.id, session.userId), columns: { name: true, email: true } }) : Promise.resolve(null),
   ]);
@@ -238,7 +238,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
                                     <Input name="endYear" type="number" min={2000} max={3000} defaultValue={period.endYear} required className="mt-1" />
                                   </label>
                                   <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
-                                    <input name="isActive" type="checkbox" defaultChecked={period.isActive} className="h-4 w-4 rounded border-border" />
+                                    <input name="isActive" type="checkbox" defaultChecked={!!period.isActive} className="h-4 w-4 rounded border-border" />
                                     Jadikan aktif
                                   </label>
                                   <Button type="submit" className="mt-2">

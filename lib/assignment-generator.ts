@@ -28,7 +28,7 @@ async function generatePeriodicAssignments(eventId: string, periodId: string) {
   const allUsers = await db
     .select({ id: users.id, role: users.role, divisionId: users.divisionId })
     .from(users)
-    .where(and(eq(users.periodId, periodId), eq(users.isActive, true)));
+    .where(and(eq(users.periodId, periodId), eq(users.isActive, 1)));
 
   const bpi = allUsers.filter((u) => u.role === "BPI");
   const kadiv = allUsers.filter((u) => u.role === "KADIV");
@@ -63,10 +63,8 @@ async function generatePeriodicAssignments(eventId: string, periodId: string) {
     for (let i = 0; i < pairs.length; i += 100) {
       await db
         .insert(evaluations)
-        .values(pairs.slice(i, i + 100))
-        .onConflictDoNothing({
-          target: [evaluations.evaluatorId, evaluations.evaluateeId, evaluations.eventId],
-        });
+        .ignore()
+        .values(pairs.slice(i, i + 100));
     }
   }
 
@@ -110,10 +108,8 @@ async function generateProkerAssignments(eventId: string, prokerId: string, _per
     for (let i = 0; i < pairs.length; i += 100) {
       await db
         .insert(evaluations)
-        .values(pairs.slice(i, i + 100))
-        .onConflictDoNothing({
-          target: [evaluations.evaluatorId, evaluations.evaluateeId, evaluations.eventId],
-        });
+        .ignore()
+        .values(pairs.slice(i, i + 100));
     }
   }
 

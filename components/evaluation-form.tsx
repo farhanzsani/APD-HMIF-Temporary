@@ -9,7 +9,7 @@ interface EvaluationItem {
     id: string;
     evaluatee: { name: string; division: { name: string } | null };
     event: {
-        isOpen: boolean;
+        isOpen: number;
         indicators: Array<{
             id: string;
             indicator: { name: string };
@@ -19,7 +19,7 @@ interface EvaluationItem {
 
 interface EvaluationFormProps {
     pending: EvaluationItem[];
-    eventIsOpen: boolean;
+    eventIsOpen: number;
     submitAction: (formData: FormData) => Promise<void>;
 }
 
@@ -108,15 +108,15 @@ export function EvaluationForm({ pending, eventIsOpen, submitAction }: Evaluatio
                             <details key={ev.id} className="group" open={isIncomplete}>
                                 <summary
                                     className={`flex cursor-pointer list-none items-center justify-between gap-2 px-5 py-3 text-sm font-semibold transition-colors hover:bg-slate-50 ${isIncomplete
-                                            ? "text-red-800 bg-red-50/50"
-                                            : "text-slate-900"
+                                        ? "text-red-800 bg-red-50/50"
+                                        : "text-slate-900"
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <span
                                             className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${isIncomplete
-                                                    ? "bg-red-200 text-red-700"
-                                                    : "bg-slate-200 text-slate-600"
+                                                ? "bg-red-200 text-red-700"
+                                                : "bg-slate-200 text-slate-600"
                                                 }`}
                                         >
                                             {index + 1}

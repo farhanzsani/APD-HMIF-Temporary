@@ -2,7 +2,6 @@ import {
     mysqlTable,
     mysqlEnum,
     varchar,
-    boolean,
     int,
     timestamp,
     text,

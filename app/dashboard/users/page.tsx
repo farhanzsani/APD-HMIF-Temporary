@@ -56,7 +56,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
       periodId: String(formData.get("periodId") ?? ""),
       divisionId: String(formData.get("divisionId") ?? ""),
       password: require("crypto").randomUUID().slice(0, 16),
-      isActive: formData.get("isActive") === "on",
+      isActive: formData.get("isActive") === "on" ? 1 : 0,
     };
 
     const parsed = createUserSchema.safeParse(raw);
@@ -67,7 +67,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
 
     // Simpan user ke database
     try {
-      await db.insert(usersTable).values({ id: crypto.randomUUID(), ...data, passwordHash });
+      await db.insert(usersTable).values({ id: crypto.randomUUID(), ...data, passwordHash, isActive: data.isActive ? 1 : 0 });
     } catch (error: any) {
       if (error?.code === "ER_DUP_ENTRY" || error?.message?.includes("Duplicate entry")) {
         redirect(`/dashboard/users?success=${encodeURIComponent("NIM sudah digunakan")}&alert=error`);
@@ -146,7 +146,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
       periodId: String(formData.get("periodId") ?? ""),
       divisionId: String(formData.get("divisionId") ?? ""),
       password: "",
-      isActive: formData.get("isActive") === "on",
+      isActive: formData.get("isActive") === "on" ? 1 : 0,
     };
 
     const parsed = updateUserSchema.safeParse(raw);
@@ -181,7 +181,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   }
 
   const [activePeriod, periodsData, divisionsData, allUsersData, currentUser] = await Promise.all([
-    db.query.periods.findFirst({ where: eq(periods.isActive, true), orderBy: [desc(periods.startYear)] }),
+    db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.query.periods.findMany({ orderBy: [desc(periods.startYear)] }),
     db.query.divisions.findMany({ orderBy: [asc(divisionsTable.name)], with: { users: { columns: { id: true } } } }),
     db.query.users.findMany({ orderBy: [asc(usersTable.name)], with: { period: true, division: true } }),
@@ -481,7 +481,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                                   </label>
 
                                   <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
-                                    <input name="isActive" type="checkbox" defaultChecked={user.isActive} className="h-4 w-4 rounded border-border" />
+                                    <input name="isActive" type="checkbox" defaultChecked={!!user.isActive} className="h-4 w-4 rounded border-border" />
                                     Aktif
                                   </label>
                                   <Button type="submit" className="mt-2">
