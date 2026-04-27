@@ -46,12 +46,20 @@ export const users = mysqlTable("user", {
     passwordUpdatedAt: timestamp("passwordUpdatedAt"),
     periodId: varchar("periodId", { length: 36 }).notNull(),
     divisionId: varchar("divisionId", { length: 36 }),
+    subdivisionId: varchar("subdivisionId", { length: 36 }),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const divisions = mysqlTable("division", {
     id: varchar("id", { length: 36 }).primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
+});
+
+export const subdivisions = mysqlTable("subdivision", {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    divisionId: varchar("divisionId", { length: 36 }).notNull(),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
