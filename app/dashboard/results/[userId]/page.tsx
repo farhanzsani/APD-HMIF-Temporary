@@ -20,7 +20,8 @@ type PageProps = {
 };
 
 export default async function MemberDetailPage({ params, searchParams }: PageProps) {
-    const { userId } = await params;
+    const resolvedParams = await params;
+    const userId = resolvedParams.userId;
     const { eventId } = await searchParams;
 
     const session = await getSession();

@@ -4,7 +4,8 @@ import { canViewResults } from "@/lib/permissions";
 import { exportEventReport, exportEventReportXlsx } from "@/services/reports";
 
 export async function GET(request: Request, { params }: { params: Promise<{ eventId: string }> }) {
-  const { eventId } = await params;
+  const resolvedParams = await params;
+  const eventId = resolvedParams.eventId;
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canViewResults(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });

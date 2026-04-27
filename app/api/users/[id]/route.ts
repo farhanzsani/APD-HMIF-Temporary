@@ -15,7 +15,8 @@ export async function GET(_request: Request, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { id } = await params;
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
   const user = await db.query.users.findFirst({
     where: eq(users.id, id),
@@ -33,7 +34,8 @@ export async function PUT(request: Request, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { id } = await params;
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
   const json = await request.json().catch(() => null);
   const parsed = updateUserSchema.safeParse(json);
@@ -63,6 +65,12 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+<<<<<<< HEAD
+=======
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+
+>>>>>>> c5186c3 (fix: fix turbopack error)
   await db.delete(users).where(eq(users.id, id));
 
   return NextResponse.json({ ok: true });

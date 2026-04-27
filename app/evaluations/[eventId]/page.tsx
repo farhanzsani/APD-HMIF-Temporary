@@ -16,7 +16,8 @@ interface PageProps {
 
 export default async function EventEvaluationsPage({ params, searchParams }: PageProps) {
   const query = await searchParams;
-  const { eventId } = await params;
+  const resolvedParams = await params;
+  const eventId = resolvedParams.eventId;
   const session = await getSession();
   if (!session) redirect("/");
 

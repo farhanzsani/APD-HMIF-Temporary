@@ -13,7 +13,8 @@ interface PageProps {
 }
 
 export default async function CompletedEventDetailPage({ params }: PageProps) {
-    const { eventId } = await params;
+    const resolvedParams = await params;
+    const eventId = resolvedParams.eventId;
     const session = await getSession();
     if (!session) redirect("/");
 

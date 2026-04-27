@@ -15,7 +15,8 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { id } = await params;
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
   const json = await request.json().catch(() => null);
   const parsed = updateIndicatorSchema.safeParse(json);
@@ -44,6 +45,12 @@ export async function DELETE(_request: NextRequest, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+<<<<<<< HEAD
+=======
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+
+>>>>>>> c5186c3 (fix: fix turbopack error)
   await db.delete(indicators).where(eq(indicators.id, id));
 
   return NextResponse.json({ ok: true });
