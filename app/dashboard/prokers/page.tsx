@@ -272,7 +272,7 @@ export default async function ProkersPage({ searchParams }: ProkersPageProps) {
                   <TableBody>
                     {prokers.map((proker: any) => {
                       const panitiaIds = new Set(proker.panitia.map((p: any) => p.userId));
-                      const eligibleUsers = usersData.filter((u: any) => u.periodId === proker.periodId && u.isActive && !panitiaIds.has(u.id));
+                      const eligibleUsers = usersData.filter((u: any) => u.periodId === proker.periodId && u.isActive === 1 && !panitiaIds.has(u.id));
                       return (
                         <TableRow key={proker.id}>
                           <TableCell className="pl-4 font-medium">{proker.name}</TableCell>

@@ -14,6 +14,8 @@ export async function GET(_request: Request, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  const { id } = await params;
+
   const event = await db.query.evaluationEvents.findFirst({
     where: eq(evaluationEvents.id, id),
     with: {
@@ -38,6 +40,8 @@ export async function PUT(request: Request, { params }: RouteContext) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { id } = await params;
 
   const json = await request.json().catch(() => null);
   const parsed = updateEventSchema.safeParse(json);
@@ -69,6 +73,8 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { id } = await params;
 
   const [countRow] = await db
     .select({ count: sql<number>`count(*)`.as("count") })

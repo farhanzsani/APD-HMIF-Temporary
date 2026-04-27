@@ -147,6 +147,7 @@ export const periodsRelations = relations(periods, ({ many }) => ({
 export const usersRelations = relations(users, ({ one, many }) => ({
     period: one(periods, { fields: [users.periodId], references: [periods.id] }),
     division: one(divisions, { fields: [users.divisionId], references: [divisions.id] }),
+    subdivision: one(subdivisions, { fields: [users.subdivisionId], references: [subdivisions.id] }),
     panitia: many(panitia),
     evaluationsGiven: many(evaluations, { relationName: "evaluator" }),
     evaluationsReceived: many(evaluations, { relationName: "evaluatee" }),
@@ -156,6 +157,12 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 export const divisionsRelations = relations(divisions, ({ many }) => ({
     users: many(users),
     prokers: many(prokers),
+    subdivisions: many(subdivisions),
+}));
+
+export const subdivisionsRelations = relations(subdivisions, ({ one, many }) => ({
+    division: one(divisions, { fields: [subdivisions.divisionId], references: [divisions.id] }),
+    users: many(users),
 }));
 
 export const prokersRelations = relations(prokers, ({ one, many }) => ({
@@ -211,6 +218,7 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
 export type Period = typeof periods.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Division = typeof divisions.$inferSelect;
+export type Subdivision = typeof subdivisions.$inferSelect;
 export type Proker = typeof prokers.$inferSelect;
 export type Panitia = typeof panitia.$inferSelect;
 export type EvaluationEvent = typeof evaluationEvents.$inferSelect;

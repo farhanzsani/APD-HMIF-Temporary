@@ -158,8 +158,7 @@ export default async function ResultsPage({ searchParams }: PageProps) {
                   { label: "Total penilaian", value: totalAssignments },
                   { label: "Sudah submit", value: submissionCount },
                   { label: "Belum submit", value: pendingCount },
-                  { label: "Indikator hard", value: hardCount },
-                  { label: "Indikator soft", value: softCount },
+                  { label: "Total indikator", value: indicatorCount },
                 ]
                   .filter(Boolean)
                   .map((stat) => (
@@ -186,7 +185,6 @@ export default async function ResultsPage({ searchParams }: PageProps) {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="pl-4">Indikator</TableHead>
-                        <TableHead>Kategori</TableHead>
                         <TableHead className="pr-4 text-right">Rata-rata</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -194,7 +192,6 @@ export default async function ResultsPage({ searchParams }: PageProps) {
                       {indicatorAverages.map((ind) => (
                         <TableRow key={ind.id}>
                           <TableCell className="pl-4 font-medium">{ind.name}</TableCell>
-                          <TableCell className="text-muted-foreground">{ind.category}</TableCell>
                           <TableCell className="pr-4 text-right font-semibold">{ind.avg.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
@@ -256,18 +253,18 @@ export default async function ResultsPage({ searchParams }: PageProps) {
 
 function buildIndicatorAverages(
   results: Array<{
-    indicators: Array<{ id: string; name: string; category: string; avg: number }>;
+    indicators: Array<{ id: string; name: string; avg: number }>;
   }>,
 ) {
-  const sums = new Map<string, { name: string; category: string; total: number; count: number }>();
+  const sums = new Map<string, { name: string; total: number; count: number }>();
   for (const res of results) {
     for (const ind of res.indicators) {
-      const current = sums.get(ind.id) ?? { name: ind.name, category: ind.category, total: 0, count: 0 };
+      const current = sums.get(ind.id) ?? { name: ind.name, total: 0, count: 0 };
       current.total += ind.avg;
       current.count += 1;
       sums.set(ind.id, current);
     }
   }
 
-  return Array.from(sums.entries()).map(([id, value]) => ({ id, name: value.name, category: value.category, avg: value.count ? value.total / value.count : 0 }));
+  return Array.from(sums.entries()).map(([id, value]) => ({ id, name: value.name, avg: value.count ? value.total / value.count : 0 }));
 }

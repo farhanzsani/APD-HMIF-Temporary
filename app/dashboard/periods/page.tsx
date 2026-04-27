@@ -104,7 +104,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
   const alert = params?.alert;
 
   const totalPeriods = periodsData.length;
-  const activeCount = periodsData.filter((p) => p.isActive).length;
+  const activeCount = periodsData.filter((p) => p.isActive === 1).length;
   const inactiveCount = totalPeriods - activeCount;
 
   const sidebarStyle = {
@@ -208,7 +208,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
                           {period.startYear} - {period.endYear}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={period.isActive ? "default" : "outline"}>{period.isActive ? "Aktif" : "Nonaktif"}</Badge>
+                          <Badge variant={period.isActive === 1 ? "default" : "outline"}>{period.isActive === 1 ? "Aktif" : "Nonaktif"}</Badge>
                         </TableCell>
                         <TableCell className="pr-4">
                           <div className="flex items-center justify-end gap-2">

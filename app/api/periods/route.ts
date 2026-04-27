@@ -50,5 +50,5 @@ export async function POST(request: Request) {
     createdAt: new Date(),
   });
 
-  return NextResponse.json({ period: { id, name, startYear, endYear, isActive: !!isActive } }, { status: 201 });
+  return NextResponse.json({ period: { id, name, startYear, endYear, isActive: isActive ? 1 : 0 } }, { status: 201 });
 }

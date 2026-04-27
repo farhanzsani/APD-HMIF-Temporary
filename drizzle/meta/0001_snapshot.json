@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "edda36a4-1ba9-48ee-8f41-93f97985a84a",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "0fa0ab0b-67d3-4253-b417-b1bb67ee1618",
+  "prevId": "bc462c85-6bd8-46bd-bda1-4fb28105f244",
   "tables": {
     "auditlog": {
       "name": "auditlog",
@@ -58,11 +58,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -112,11 +111,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -166,14 +164,14 @@
         },
         "startDate": {
           "name": "startDate",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "endDate": {
           "name": "endDate",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -194,11 +192,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -247,11 +244,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -307,11 +303,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -391,11 +386,26 @@
           "notNull": true,
           "autoincrement": false
         },
+        "type": {
+          "name": "type",
+          "type": "enum('PERIODIC','PROKER')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'PERIODIC'"
+        },
         "evaluatorRole": {
           "name": "evaluatorRole",
           "type": "enum('ADMIN','BPI','KADIV','ANGGOTA','KASUBDIV')",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "evaluateeRole": {
+          "name": "evaluateeRole",
+          "type": "enum('ADMIN','BPI','KADIV','ANGGOTA','KASUBDIV')",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "isActive": {
@@ -408,11 +418,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -507,11 +516,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -560,11 +568,10 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -572,6 +579,51 @@
       "compositePrimaryKeys": {
         "proker_id": {
           "name": "proker_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "subdivision": {
+      "name": "subdivision",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "divisionId": {
+          "name": "divisionId",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "subdivision_id": {
+          "name": "subdivision_id",
           "columns": [
             "id"
           ]
@@ -635,7 +687,7 @@
         },
         "passwordUpdatedAt": {
           "name": "passwordUpdatedAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -654,13 +706,19 @@
           "notNull": false,
           "autoincrement": false
         },
+        "subdivisionId": {
+          "name": "subdivisionId",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
+          "type": "datetime",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
+          "autoincrement": false
         }
       },
       "indexes": {},

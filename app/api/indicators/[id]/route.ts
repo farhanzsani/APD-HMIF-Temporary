@@ -15,6 +15,8 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   if (!session) return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
   if (!canManageRoles(session.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  const { id } = await params;
+
   const json = await request.json().catch(() => null);
   const parsed = updateIndicatorSchema.safeParse(json);
 

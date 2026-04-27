@@ -14,7 +14,7 @@ export async function GET() {
   const result = await db
     .select()
     .from(indicators)
-    .orderBy(asc(indicators.category), asc(indicators.name));
+    .orderBy(asc(indicators.name));
 
   return NextResponse.json({ indicators: result });
 }

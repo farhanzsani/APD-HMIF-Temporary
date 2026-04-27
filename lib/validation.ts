@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+// Helper: converts boolean/truthy input to 0|1 for MySQL tinyint columns
+const tinyBool = (defaultVal: 0 | 1) =>
+  z.coerce
+    .boolean()
+    .optional()
+    .default(defaultVal === 1)
+    .transform((v) => (v ? 1 : 0) as 0 | 1);
+
 export const loginSchema = z.object({
   nim: z.string().min(3),
   password: z.string().min(6),
@@ -41,6 +49,12 @@ export const createUserSchema = z.object({
     .optional()
     .or(z.literal(""))
     .transform((v) => (v === "" || v === undefined ? null : v)),
+  subdivisionId: z
+    .string()
+    .min(1)
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" || v === undefined ? null : v)),
   password: z.string().min(6),
   isActive: z.coerce.number().int().min(0).max(1).optional().default(1),
 });
@@ -57,6 +71,12 @@ export const updateUserSchema = z.object({
   role: roleEnum,
   periodId: z.string().min(1),
   divisionId: z
+    .string()
+    .min(1)
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" || v === undefined ? null : v)),
+  subdivisionId: z
     .string()
     .min(1)
     .optional()
@@ -86,6 +106,8 @@ export const updateProkerSchema = createProkerSchema;
 export const addPanitiaSchema = z.object({
   userId: z.string().min(1),
 });
+
+const hierarchyRoleEnum = z.enum(["BPI", "KADIV", "KASUBDIV", "ANGGOTA"]);
 
 export const createIndicatorSchema = z.object({
   name: z.string().min(1, "Nama wajib diisi"),

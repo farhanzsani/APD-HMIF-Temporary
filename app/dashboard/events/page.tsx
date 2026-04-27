@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { Info, Trash2 } from "lucide-react";
 
 import { ConfirmForm } from "@/components/confirm-form";
+import { EventForm } from "@/components/event-form";
 import { SidebarShell } from "@/components/sidebar-shell";
 import { SiteHeader } from "@/components/site-header";
 import { SuccessAlert } from "@/components/success-alert";
@@ -49,7 +50,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
         prokerId: formData.get("prokerId") ? String(formData.get("prokerId")) : null,
         startDate: formData.get("startDate"),
         endDate: formData.get("endDate"),
-        isOpen: formData.get("isOpen") === "on",
+        isOpen: formData.get("isOpen") === "on" ? 1 : 0,
         indicatorIds: Array.isArray(formData.getAll("indicatorIds")) ? formData.getAll("indicatorIds").map(String) : [],
       };
 
@@ -112,7 +113,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
         name: String(formData.get("name") ?? ""),
         startDate: formData.get("startDate"),
         endDate: formData.get("endDate"),
-        isOpen: formData.get("isOpen") === "on",
+        isOpen: formData.get("isOpen") === "on" ? 1 : 0,
       };
       const parsed = updateEventSchema.safeParse(raw);
       if (!parsed.success) throw new Error("Input tidak valid");
@@ -210,7 +211,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   const alertType = (params?.alert as "success" | "error" | "info") ?? (error ? "error" : "success");
 
   const totalEvents = eventsData.length;
-  const openEvents = eventsData.filter((e) => e.isOpen).length;
+  const openEvents = eventsData.filter((e) => e.isOpen === 1).length;
   const prokerEvents = eventsData.filter((e) => e.type === "PROKER").length;
   const periodicEvents = totalEvents - prokerEvents;
 
@@ -374,7 +375,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
                             {new Date(ev.startDate).toLocaleDateString()} - {new Date(ev.endDate).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
-                            <Badge variant={ev.isOpen ? "default" : "outline"}>{ev.isOpen ? "Dibuka" : "Ditutup"}</Badge>
+                            <Badge variant={ev.isOpen === 1 ? "default" : "outline"}>{ev.isOpen === 1 ? "Dibuka" : "Ditutup"}</Badge>
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline">{ev.indicators.length} indikator</Badge>
@@ -426,7 +427,6 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
                                         {ev.indicators.map((snap) => (
                                           <div key={snap.id} className="rounded border border-border px-3 py-2">
                                             <div className="font-medium">{snap.indicator.name}</div>
-                                            <div className="text-xs text-muted-foreground">{snap.indicator.category}</div>
                                           </div>
                                         ))}
                                         {ev.indicators.length === 0 && <div className="text-sm text-muted-foreground">Tidak ada indikator.</div>}
