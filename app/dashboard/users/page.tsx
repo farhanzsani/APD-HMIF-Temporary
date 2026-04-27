@@ -59,7 +59,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
     const passwordHash = await bcrypt.hash(password, 10);
 
     try {
-      await db.insert(usersTable).values({ id: crypto.randomUUID(), ...data, passwordHash });
+      await db.insert(usersTable).values({ id: crypto.randomUUID(), ...data, passwordHash, isActive: data.isActive ? 1 : 0 });
     } catch (error: any) {
       if (error?.code === "ER_DUP_ENTRY" || error?.message?.includes("Duplicate entry")) {
         redirect(`/dashboard/users?success=${encodeURIComponent("NIM sudah digunakan")}&alert=error`);
@@ -173,7 +173,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
     redirect(`/dashboard/users?success=${encodeURIComponent("User dihapus")}&alert=success`);
   }
 
-  const [activePeriod, periodsData, divisionsData, subdivisionsData, allUsersData, currentUser] = await Promise.all([
+  const [activePeriod, periodsData, divisionsData, allUsersData, currentUser] = await Promise.all([
     db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.query.periods.findMany({ orderBy: [desc(periods.startYear)] }),
     db.query.divisions.findMany({ orderBy: [asc(divisionsTable.name)], with: { users: { columns: { id: true } } } }),
@@ -390,24 +390,60 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                                   <SheetTitle>Edit User</SheetTitle>
                                   <SheetDescription>Perbarui data user. Kosongkan password jika tidak diubah.</SheetDescription>
                                 </SheetHeader>
-                                <UserForm
-                                  action={updateUser}
-                                  divisions={divisionsData}
-                                  subdivisions={subdivisionsData}
-                                  periods={periodsData}
-                                  defaultValues={{
-                                    id: user.id,
-                                    name: user.name,
-                                    nim: user.nim,
-                                    email: user.email ?? "",
-                                    role: user.role,
-                                    periodId: user.periodId,
-                                    divisionId: user.divisionId ?? "",
-                                    subdivisionId: user.subdivisionId ?? "",
-                                    isActive: user.isActive === 1,
-                                  }}
-                                  showPassword
-                                />
+                                <form action={updateUser} className="grid gap-3 p-4 pt-0">
+                                  <input type="hidden" name="id" value={user.id} />
+                                  <label className="text-sm font-medium text-foreground">
+                                    Nama
+                                    <Input name="name" defaultValue={user.name} required className="mt-1" />
+                                  </label>
+                                  <label className="text-sm font-medium text-foreground">
+                                    NIM
+                                    <Input name="nim" defaultValue={user.nim} required className="mt-1" />
+                                  </label>
+                                  <label className="text-sm font-medium text-foreground">
+                                    Email
+                                    <Input name="email" type="email" defaultValue={user.email ?? ""} className="mt-1" />
+                                  </label>
+                                  <label className="text-sm font-medium text-foreground">
+                                    Role
+                                    <select name="role" defaultValue={user.role} className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm">
+                                      {roles.map((role) => (
+                                        <option key={role.value} value={role.value}>
+                                          {role.label}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </label>
+                                  <label className="text-sm font-medium text-foreground">
+                                    Periode
+                                    <select name="periodId" defaultValue={user.periodId} className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm">
+                                      {periodsData.map((p) => (
+                                        <option key={p.id} value={p.id}>
+                                          {p.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </label>
+                                  <label className="text-sm font-medium text-foreground">
+                                    Divisi
+                                    <select name="divisionId" defaultValue={user.divisionId ?? ""} className="mt-1 w-full rounded-lg border border-border px-3 py-2 text-sm">
+                                      <option value="">(Tanpa divisi)</option>
+                                      {divisionsData.map((d) => (
+                                        <option key={d.id} value={d.id}>
+                                          {d.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </label>
+
+                                  <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
+                                    <input name="isActive" type="checkbox" defaultChecked={!!user.isActive} className="h-4 w-4 rounded border-border" />
+                                    Aktif
+                                  </label>
+                                  <Button type="submit" className="mt-2">
+                                    Simpan
+                                  </Button>
+                                </form>
                               </SheetContent>
                             </Sheet>
 

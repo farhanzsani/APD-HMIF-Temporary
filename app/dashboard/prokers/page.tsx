@@ -276,8 +276,8 @@ export default async function ProkersPage({ searchParams }: ProkersPageProps) {
                       return (
                         <TableRow key={proker.id}>
                           <TableCell className="pl-4 font-medium">{proker.name}</TableCell>
-                          <TableCell className="text-muted-foreground">{proker.division.name}</TableCell>
-                          <TableCell className="text-muted-foreground">{proker.period.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{proker.division?.name ?? "-"}</TableCell>
+                          <TableCell className="text-muted-foreground">{proker.period?.name ?? "-"}</TableCell>
                           <TableCell>
                             <Badge variant="outline">{proker.panitia.length} panitia</Badge>
                           </TableCell>
@@ -350,7 +350,7 @@ export default async function ProkersPage({ searchParams }: ProkersPageProps) {
                                         {proker.panitia.map((p: any) => (
                                           <div key={p.id} className="flex items-center justify-between rounded border border-border px-3 py-2 text-sm text-foreground">
                                             <span>
-                                              {p.user.name} · {p.user.nim}
+                                              {p.user?.name ?? "User Tidak Dikenal"} · {p.user?.nim ?? "-"}
                                             </span>
                                             <form action={removePanitia}>
                                               <input type="hidden" name="panitiaId" value={p.id} />

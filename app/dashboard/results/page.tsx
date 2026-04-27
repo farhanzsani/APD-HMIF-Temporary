@@ -30,13 +30,18 @@ export default async function ResultsPage({ searchParams }: PageProps) {
     session.userId ? db.query.users.findFirst({ where: eq(users.id, session.userId), columns: { name: true, email: true } }) : Promise.resolve(null),
   ]);
 
+  const sidebarStyle = {
+    "--sidebar-width": "calc(var(--spacing) * 72)",
+    "--header-height": "calc(var(--spacing) * 12)",
+  } as React.CSSProperties;
+
   const selectedId = params.eventId ?? events[0]?.id;
   const success = params?.success ? decodeURIComponent(params.success) : undefined;
   const alert = params?.alert ? (params.alert as "success" | "info" | "error") : success ? "success" : undefined;
 
   if (!selectedId) {
     return (
-      <SidebarShell user={currentUser ? { name: currentUser.name, email: currentUser.email ?? undefined } : undefined}>
+      <SidebarShell user={currentUser ? { name: currentUser.name, email: currentUser.email ?? undefined } : undefined} sidebarStyle={sidebarStyle}>
         <SiteHeader title="Hasil & Laporan" activePeriod={activePeriod?.name ?? "-"} />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
@@ -55,20 +60,30 @@ export default async function ResultsPage({ searchParams }: PageProps) {
 
   const report = await getEventReport(selectedId, session);
 
-  const evaluateeWithScores = report.results.length;
-  const overallAvg = evaluateeWithScores ? report.results.reduce((acc, r) => acc + r.overallAvg, 0) / evaluateeWithScores : 0;
-  const totalAssignments = report.stats.totalAssignments;
-  const submissionCount = report.stats.submittedCount;
-  const pendingCount = Math.max(totalAssignments - submissionCount, 0);
-  const raterCount = report.stats.evaluatorCount;
-  const evaluateeCount = report.stats.evaluateeCount;
-  const indicatorCount = report.event.indicators.length;
+  if (!report || !report.event) {
+    return (
+      <SidebarShell user={currentUser ? { name: currentUser.name, email: currentUser.email ?? undefined } : undefined} sidebarStyle={sidebarStyle}>
+        <SiteHeader title="Hasil & Laporan" activePeriod={activePeriod?.name ?? "-"} />
+        <div className="flex flex-1 items-center justify-center p-10 text-center">
+          <p className="text-muted-foreground">Detail laporan tidak tersedia atau event tidak ditemukan.</p>
+        </div>
+      </SidebarShell>
+    );
+  }
 
-  const indicatorAverages = buildIndicatorAverages(report.results);
-  const sidebarStyle = {
-    "--sidebar-width": "calc(var(--spacing) * 72)",
-    "--header-height": "calc(var(--spacing) * 12)",
-  } as React.CSSProperties;
+  const results = report.results ?? [];
+  const evaluateeWithScores = results.length;
+  const overallAvg = evaluateeWithScores ? results.reduce((acc, r) => acc + (r?.overallAvg ?? 0), 0) / evaluateeWithScores : 0;
+  const totalAssignments = report.stats?.totalAssignments ?? 0;
+  const submissionCount = report.stats?.submittedCount ?? 0;
+  const pendingCount = Math.max(totalAssignments - submissionCount, 0);
+  const raterCount = report.stats?.evaluatorCount ?? 0;
+  const evaluateeCount = report.stats?.evaluateeCount ?? 0;
+  const indicatorCount = report.event.indicators?.length ?? 0;
+  const hardCount = report.event.indicators?.filter((i: any) => i.category === "hardskill").length ?? 0;
+  const softCount = report.event.indicators?.filter((i: any) => i.category === "softskill").length ?? 0;
+
+  const indicatorAverages = buildIndicatorAverages(results);
 
   const dateFmt = new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" });
   const typeLabel = report.event.type === "PROKER" ? "Event Proker" : "Event Periodik";

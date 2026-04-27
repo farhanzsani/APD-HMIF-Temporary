@@ -68,7 +68,10 @@ async function generatePeriodicAssignments(eventId: string, periodId: string) {
 
   if (pairs.length > 0) {
     for (let i = 0; i < pairs.length; i += 100) {
-      await db.insert(evaluations).values(pairs.slice(i, i + 100)).onDuplicateKeyUpdate({ set: { id: sql`id` } });
+      await db
+        .insert(evaluations)
+        .ignore()
+        .values(pairs.slice(i, i + 100));
     }
   }
 
@@ -85,7 +88,7 @@ async function generateProkerAssignments(eventId: string, prokerId: string, _per
 
   console.log(`[Assignment Generator] PROKER event ${eventId}: Found ${panitiaRows.length} total panitia for proker ${prokerId}`);
 
-  const activeUsers = panitiaRows.filter((p) => p.user.isActive === 1).map((p) => p.user);
+  const activeUsers = panitiaRows.filter((p) => p.user.isActive).map((p) => p.user);
 
   console.log(`[Assignment Generator] PROKER event ${eventId}: ${activeUsers.length} active users after filtering`);
   if (activeUsers.length > 0) {
@@ -110,7 +113,10 @@ async function generateProkerAssignments(eventId: string, prokerId: string, _per
 
   if (pairs.length > 0) {
     for (let i = 0; i < pairs.length; i += 100) {
-      await db.insert(evaluations).values(pairs.slice(i, i + 100)).onDuplicateKeyUpdate({ set: { id: sql`id` } });
+      await db
+        .insert(evaluations)
+        .ignore()
+        .values(pairs.slice(i, i + 100));
     }
   }
 

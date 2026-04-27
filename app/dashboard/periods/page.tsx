@@ -49,7 +49,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
 
     if (isActive) await db.update(periods).set({ isActive: 0 });
 
-    await db.insert(periods).values({ id: crypto.randomUUID(), name, startYear, endYear, isActive, createdAt: new Date() });
+    await db.insert(periods).values({ id: crypto.randomUUID(), name, startYear, endYear, isActive: isActive ? 1 : 0, createdAt: new Date() });
     revalidatePath("/dashboard/periods");
     redirect(`/dashboard/periods?success=${encodeURIComponent("Periode ditambahkan")}&alert=success`);
   }
@@ -75,7 +75,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
 
     if (isActive) await db.update(periods).set({ isActive: 0 });
 
-    await db.update(periods).set({ name, startYear, endYear, isActive }).where(eq(periods.id, id));
+    await db.update(periods).set({ name, startYear, endYear, isActive: isActive ? 1 : 0 }).where(eq(periods.id, id));
     revalidatePath("/dashboard/periods");
     redirect(`/dashboard/periods?success=${encodeURIComponent("Periode diperbarui")}&alert=success`);
   }
@@ -238,7 +238,7 @@ export default async function PeriodsPage({ searchParams }: PeriodsPageProps) {
                                     <Input name="endYear" type="number" min={2000} max={3000} defaultValue={period.endYear} required className="mt-1" />
                                   </label>
                                   <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
-                                    <input name="isActive" type="checkbox" defaultChecked={period.isActive === 1} className="h-4 w-4 rounded border-border" />
+                                    <input name="isActive" type="checkbox" defaultChecked={!!period.isActive} className="h-4 w-4 rounded border-border" />
                                     Jadikan aktif
                                   </label>
                                   <Button type="submit" className="mt-2">

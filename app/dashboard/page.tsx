@@ -122,7 +122,7 @@ export default async function Page() {
 
   const eventCount = events.length;
   const now = new Date();
-  const runningEvents = events.filter((event) => event.isOpen === 1 && new Date(event.startDate) <= now && new Date(event.endDate) >= now);
+  const runningEvents = events.filter((event) => !!event.isOpen && new Date(event.startDate) <= now && new Date(event.endDate) >= now);
   const runningCount = runningEvents.length;
   const tableEvents = events.slice(0, 8);
 
@@ -247,7 +247,7 @@ export default async function Page() {
                               {start} - {end}
                             </TableCell>
                             <TableCell>
-                              <Badge variant={event.isOpen === 1 ? "default" : "outline"}>{event.isOpen === 1 ? (isOngoing ? "Berjalan" : "Dibuka") : "Ditutup"}</Badge>
+                              <Badge variant={event.isOpen ? "default" : "outline"}>{!!event.isOpen ? (isOngoing ? "Berjalan" : "Dibuka") : "Ditutup"}</Badge>
                             </TableCell>
                             <TableCell className="text-right text-sm text-muted-foreground">
                               {percent}% ({completed}/{totalAssignments})

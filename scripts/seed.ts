@@ -290,7 +290,10 @@ async function seedPeriodAndDivisions() {
     const id = crypto.randomUUID();
     await db.insert(periods).values({
       id,
-      ...DEFAULT_PERIOD,
+      name: DEFAULT_PERIOD.name,
+      startYear: DEFAULT_PERIOD.startYear,
+      endYear: DEFAULT_PERIOD.endYear,
+      isActive: DEFAULT_PERIOD.isActive ? 1 : 0,
     });
     period = await db.query.periods.findFirst({ where: eq(periods.id, id) });
   }
@@ -318,7 +321,7 @@ async function seedUsers(periodId: string, divisionMap: Record<string, string>) 
       const userData = {
         name: u.name,
         role: u.role,
-        isActive: 1,
+        isActive: 1 as const,
         periodId,
         divisionId: u.division ? divisionMap[u.division] : null,
         passwordHash: hash,

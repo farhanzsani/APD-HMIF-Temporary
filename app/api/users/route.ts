@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     divisionId: divisionId ?? null,
     subdivisionId: subdivisionId ?? null,
     passwordHash,
-    isActive: isActive ?? true,
+    isActive: isActive != null ? (isActive ? 1 : 0) : 1,
     createdAt: new Date(),
   });
 

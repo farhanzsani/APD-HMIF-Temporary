@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "bc462c85-6bd8-46bd-bda1-4fb28105f244",
+  "id": "edda36a4-1ba9-48ee-8f41-93f97985a84a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "auditlog": {
@@ -58,10 +58,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {
@@ -111,10 +112,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -164,14 +166,14 @@
         },
         "startDate": {
           "name": "startDate",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "endDate": {
           "name": "endDate",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -192,10 +194,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -244,10 +247,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -303,10 +307,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -393,13 +398,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "evaluateeRole": {
-          "name": "evaluateeRole",
-          "type": "enum('ADMIN','BPI','KADIV','ANGGOTA','KASUBDIV')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "isActive": {
           "name": "isActive",
           "type": "tinyint",
@@ -410,10 +408,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -508,10 +507,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -560,10 +560,11 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -571,51 +572,6 @@
       "compositePrimaryKeys": {
         "proker_id": {
           "name": "proker_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "subdivision": {
-      "name": "subdivision",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "divisionId": {
-          "name": "divisionId",
-          "type": "varchar(36)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "subdivision_id": {
-          "name": "subdivision_id",
           "columns": [
             "id"
           ]
@@ -679,7 +635,7 @@
         },
         "passwordUpdatedAt": {
           "name": "passwordUpdatedAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -698,19 +654,13 @@
           "notNull": false,
           "autoincrement": false
         },
-        "subdivisionId": {
-          "name": "subdivisionId",
-          "type": "varchar(36)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "createdAt": {
           "name": "createdAt",
-          "type": "datetime",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},

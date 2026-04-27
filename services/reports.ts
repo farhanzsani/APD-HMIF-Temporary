@@ -104,11 +104,13 @@ export async function getEventReport(eventId: string, session: Session) {
   > = {};
 
   for (const ev of filteredEvaluations) {
+    if (!ev.evaluatee) continue;
+
     const key = ev.evaluateeId;
     if (!byEvaluatee[key]) {
       byEvaluatee[key] = {
         evaluateeId: ev.evaluateeId,
-        name: ev.evaluatee.name,
+        name: ev.evaluatee.name ?? "User Tidak Dikenal",
         division: ev.evaluatee.division?.name ?? null,
         raterCount: 0,
         overallAvg: 0,
@@ -120,15 +122,30 @@ export async function getEventReport(eventId: string, session: Session) {
     const bucket = byEvaluatee[key];
     bucket.raterCount += 1;
 
-    const totalScore = ev.scores.reduce((acc: number, s: any) => acc + s.score, 0);
+    const totalScore = ev.scores.reduce((acc: number, s: any) => acc + (s?.score ?? 0), 0);
     const avgScore = ev.scores.length ? totalScore / ev.scores.length : 0;
     bucket.overallAvg += avgScore;
 
     for (const s of ev.scores) {
+      if (!s.indicatorSnapshot?.indicator) continue;
+      const cat = s.indicatorSnapshot.indicator.category ?? "Uncategorized";
+      bucket.categoryAvg[cat] = (bucket.categoryAvg[cat] ?? 0) + (s.score ?? 0);
+    }
+
+    for (const s of ev.scores) {
+      if (!s.indicatorSnapshot?.indicator) continue;
       const indId = s.indicatorSnapshot.indicatorId;
       const existing = bucket.indicators.find((i: any) => i.id === indId);
-      if (existing) existing.avg += s.score;
-      else bucket.indicators.push({ id: indId, name: s.indicatorSnapshot.indicator.name, avg: s.score });
+      if (existing) {
+        existing.avg += (s.score ?? 0);
+      } else {
+        bucket.indicators.push({
+          id: indId,
+          name: s.indicatorSnapshot.indicator.name ?? "Indikator Tanpa Nama",
+          category: s.indicatorSnapshot.indicator.category ?? "Uncategorized",
+          avg: (s.score ?? 0)
+        });
+      }
     }
 
     if (ev.feedback) bucket.feedback.push(ev.feedback);
@@ -149,11 +166,15 @@ export async function getEventReport(eventId: string, session: Session) {
       id: event.id,
       name: event.name,
       type: event.type,
-      period: event.period.name,
+      period: event.period?.name ?? "N/A",
       proker: event.proker?.name ?? null,
       startDate: event.startDate,
       endDate: event.endDate,
-      indicators: event.indicators.map((i: any) => ({ id: i.id, name: i.indicator.name })),
+      indicators: event.indicators.map((i: any) => ({
+        id: i.id,
+        name: i.indicator?.name ?? "Indikator Tanpa Nama",
+        category: i.indicator?.category ?? "Uncategorized"
+      })),
     },
     results,
     stats: {

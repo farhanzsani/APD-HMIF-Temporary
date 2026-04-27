@@ -114,12 +114,14 @@ export async function getMonthlyRank(
     }
 
     for (const ev of allEvals) {
+        if (!ev.evaluatee) continue;
+
         const key = ev.evaluateeId;
         if (!userMap.has(key)) {
             userMap.set(key, {
                 userId: ev.evaluateeId,
-                name: ev.evaluatee.name,
-                nim: (ev.evaluatee as any).nim ?? "",
+                name: ev.evaluatee.name ?? "User Tidak Dikenal",
+                nim: (ev.evaluatee as any).nim ?? "-",
                 division: ev.evaluatee.division?.name ?? null,
                 prokerSet: new Set(),
                 prokerNames: new Set(),
@@ -132,9 +134,9 @@ export async function getMonthlyRank(
         const bucket = userMap.get(key)!;
         bucket.evalCount += 1;
 
-        if (ev.event.proker) {
+        if (ev.event?.proker) {
             bucket.prokerSet.add(ev.event.prokerId!);
-            bucket.prokerNames.add(ev.event.proker.name);
+            bucket.prokerNames.add(ev.event.proker.name ?? "Proker Tanpa Nama");
         }
 
         for (const score of ev.scores) {

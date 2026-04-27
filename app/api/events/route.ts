@@ -100,7 +100,7 @@ export async function POST(request: Request) {
       prokerId: type === "PROKER" ? prokerId ?? null : null,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
-      isOpen: isOpen ?? true,
+      isOpen: isOpen ? 1 : 0,
       createdAt: new Date(),
     });
 

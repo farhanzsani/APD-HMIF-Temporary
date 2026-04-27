@@ -2,13 +2,13 @@ import {
     mysqlTable,
     mysqlEnum,
     varchar,
-    tinyint,
     int,
-    datetime,
+    timestamp,
     text,
     json,
     unique,
     index,
+    tinyint,
 } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
 
@@ -32,7 +32,7 @@ export const periods = mysqlTable("period", {
     isActive: tinyint("isActive").notNull().default(0),
     startYear: int("startYear").notNull(),
     endYear: int("endYear").notNull(),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const users = mysqlTable("user", {
@@ -43,24 +43,16 @@ export const users = mysqlTable("user", {
     role: mysqlEnum("role", ["ADMIN", "BPI", "KADIV", "ANGGOTA", "KASUBDIV"]).notNull(),
     isActive: tinyint("isActive").notNull().default(1),
     passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
-    passwordUpdatedAt: datetime("passwordUpdatedAt", { mode: "date" }),
+    passwordUpdatedAt: timestamp("passwordUpdatedAt"),
     periodId: varchar("periodId", { length: 36 }).notNull(),
     divisionId: varchar("divisionId", { length: 36 }),
-    subdivisionId: varchar("subdivisionId", { length: 36 }),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const divisions = mysqlTable("division", {
     id: varchar("id", { length: 36 }).primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
-});
-
-export const subdivisions = mysqlTable("subdivision", {
-    id: varchar("id", { length: 36 }).primaryKey(),
-    name: varchar("name", { length: 255 }).notNull(),
-    divisionId: varchar("divisionId", { length: 36 }).notNull(),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const prokers = mysqlTable("proker", {
@@ -68,7 +60,7 @@ export const prokers = mysqlTable("proker", {
     name: varchar("name", { length: 255 }).notNull(),
     divisionId: varchar("divisionId", { length: 36 }).notNull(),
     periodId: varchar("periodId", { length: 36 }).notNull(),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const panitia = mysqlTable("panitia", {
@@ -82,21 +74,19 @@ export const evaluationEvents = mysqlTable("evaluationevent", {
     name: varchar("name", { length: 255 }).notNull(),
     type: mysqlEnum("type", ["PERIODIC", "PROKER"]).notNull(),
     isOpen: tinyint("isOpen").notNull().default(1),
-    startDate: datetime("startDate", { mode: "date" }).notNull(),
-    endDate: datetime("endDate", { mode: "date" }).notNull(),
+    startDate: timestamp("startDate").notNull(),
+    endDate: timestamp("endDate").notNull(),
     periodId: varchar("periodId", { length: 36 }).notNull(),
     prokerId: varchar("prokerId", { length: 36 }),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const indicators = mysqlTable("indicator", {
     id: varchar("id", { length: 36 }).primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
-    type: mysqlEnum("type", ["PERIODIC", "PROKER"]).notNull().default("PERIODIC"),
-    evaluatorRole: mysqlEnum("evaluatorRole", ["ADMIN", "BPI", "KADIV", "ANGGOTA", "KASUBDIV"]),
-    evaluateeRole: mysqlEnum("evaluateeRole", ["ADMIN", "BPI", "KADIV", "ANGGOTA", "KASUBDIV"]),
+    category: varchar("category", { length: 255 }).notNull(),
     isActive: tinyint("isActive").notNull().default(1),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const indicatorSnapshots = mysqlTable("indicatorsnapshot", {
@@ -113,7 +103,7 @@ export const evaluations = mysqlTable(
         evaluateeId: varchar("evaluateeId", { length: 36 }).notNull(),
         eventId: varchar("eventId", { length: 36 }).notNull(),
         feedback: text("feedback"),
-        createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+        createdAt: timestamp("createdAt").notNull().defaultNow(),
     },
     (table) => ({
         uniqueEval: unique().on(table.evaluatorId, table.evaluateeId, table.eventId),
@@ -125,7 +115,7 @@ export const evaluationScores = mysqlTable("evaluationscore", {
     evaluationId: varchar("evaluationId", { length: 36 }).notNull(),
     indicatorSnapshotId: varchar("indicatorSnapshotId", { length: 36 }).notNull(),
     score: int("score").notNull(),
-    createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+    createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const auditLogs = mysqlTable(
@@ -138,7 +128,7 @@ export const auditLogs = mysqlTable(
         ip: varchar("ip", { length: 255 }),
         userAgent: text("userAgent"),
         metadata: json("metadata"),
-        createdAt: datetime("createdAt", { mode: "date" }).notNull().$defaultFn(() => new Date()),
+        createdAt: timestamp("createdAt").notNull().defaultNow(),
     },
     (table) => ({
         actionIdx: index("AuditLog_action_idx").on(table.action),

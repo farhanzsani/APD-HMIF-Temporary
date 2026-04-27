@@ -34,9 +34,8 @@ export async function POST(request: Request) {
   await db.insert(indicators).values({
     id,
     name: parsed.data.name,
-    evaluatorRole: parsed.data.evaluatorRole,
-    evaluateeRole: parsed.data.evaluateeRole,
-    isActive: parsed.data.isActive ?? true,
+    category: parsed.data.category,
+    isActive: parsed.data.isActive != null ? (parsed.data.isActive ? 1 : 0) : 1,
     createdAt: new Date(),
   });
 

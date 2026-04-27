@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1777319826780,
-      "tag": "0000_abandoned_wendell_vaughn",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1777320827401,
-      "tag": "0001_zippy_sentry",
+      "when": 1777311852897,
+      "tag": "0000_furry_excalibur",
       "breakpoints": true
     }
   ]
