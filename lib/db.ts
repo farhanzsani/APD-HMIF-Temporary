@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 import * as schema from "@/lib/schema";
 
@@ -13,20 +13,20 @@ if (!connectionString) {
 
 /**
  * Singleton pattern for the database connection.
- * Using postgres-js which supports `prepare: false` for Supabase Transaction Pooler.
+ * Using mysql2 for shared hosting MySQL compatibility.
  */
 const globalForDb = globalThis as unknown as {
-    conn: postgres.Sql | undefined;
+    conn: mysql.Pool | undefined;
 };
 
-// Create the connection client
+// Create the connection pool
 export const client =
     globalForDb.conn ??
-    postgres(connectionString, {
-        prepare: false, // MANDATORY for Supabase Transaction Mode (port 6543)
-        max: 5,        // Restrict pool size as requested
-        idle_timeout: 30,
-        connect_timeout: 10,
+    mysql.createPool({
+        uri: connectionString,
+        waitForConnections: true,
+        connectionLimit: 5,
+        connectTimeout: 10000,
     });
 
 // Save client instance in global for non-production environments
@@ -34,4 +34,4 @@ if (process.env.NODE_ENV !== "production") {
     globalForDb.conn = client;
 }
 
-export const db = drizzle(client, { schema });
+export const db = drizzle(client, { schema, mode: "default" });

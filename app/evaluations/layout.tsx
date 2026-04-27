@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/auth";
 import { EvalNav } from "@/components/eval-nav";
 import { EvalTopbar } from "@/components/eval-topbar";
+import { InactivityGuard } from "@/components/inactivity-guard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -38,21 +39,23 @@ export default async function EvaluationsLayout({ children }: { children: React.
     };
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Sticky top navbar */}
-            <EvalTopbar user={userInfo} />
+        <InactivityGuard>
+            <div className="min-h-screen bg-slate-50">
+                {/* Sticky top navbar */}
+                <EvalTopbar user={userInfo} />
 
-            {/* Tab navigation */}
-            <div className="sticky top-14 z-30 border-b border-slate-200 bg-white shadow-sm">
-                <div className="mx-auto max-w-5xl px-4">
-                    <EvalNav />
+                {/* Tab navigation */}
+                <div className="sticky top-14 z-30 border-b border-slate-200 bg-white shadow-sm">
+                    <div className="mx-auto max-w-5xl px-4">
+                        <EvalNav />
+                    </div>
+                </div>
+
+                {/* Page content */}
+                <div className="mx-auto max-w-5xl px-4 py-6">
+                    {children}
                 </div>
             </div>
-
-            {/* Page content */}
-            <div className="mx-auto max-w-5xl px-4 py-6">
-                {children}
-            </div>
-        </div>
+        </InactivityGuard>
     );
 }
