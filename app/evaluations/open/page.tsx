@@ -107,7 +107,7 @@ export default async function OpenEventsPage() {
                                             <span>{formatDate(new Date(ev.startDate))} – {formatDate(new Date(ev.endDate))}</span>
                                             {remaining <= 3 && (
                                                 <span className="font-semibold text-red-600">
-                                                    ⚠ {remaining}h lagi
+                                                    tersisa {remaining}hari lagi waktu pengerjaan
                                                 </span>
                                             )}
                                         </div>
