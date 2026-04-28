@@ -1,6 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -119,6 +120,7 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
   const success = params?.success ? decodeURIComponent(params.success) : undefined;
   const error = params?.error ? decodeURIComponent(params.error) : undefined;
   const alert = (params?.alert as "success" | "error" | "info") ?? (error ? "error" : "success");
+  const filterParam = params?.filter ?? "all";
 
   const totalIndicators = indicatorsData.length;
   const activeIndicators = indicatorsData.filter((i: any) => !!i.isActive).length;
@@ -182,8 +184,21 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
             </CardContent>
           </Card>
 
+          {/* Filter Navigation */}
+          <div className="flex gap-2 border-b pb-4 overflow-x-auto">
+            <Button variant={filterParam === "all" ? "default" : "outline"} className="whitespace-nowrap rounded-full" asChild>
+              <Link href="/dashboard/indicators">Semua Indikator</Link>
+            </Button>
+            <Button variant={filterParam === "periodic" ? "default" : "outline"} className="whitespace-nowrap rounded-full" asChild>
+              <Link href="/dashboard/indicators?filter=periodic">Penilaian Periodik</Link>
+            </Button>
+            <Button variant={filterParam === "proker" ? "default" : "outline"} className="whitespace-nowrap rounded-full" asChild>
+              <Link href="/dashboard/indicators?filter=proker">Program Kerja</Link>
+            </Button>
+          </div>
+
           {/* Render PROKER Indicators First */}
-          {(() => {
+          {(filterParam === "all" || filterParam === "proker") && (() => {
             const prokerGroup = (indicatorsData as any[]).filter((i) => i.type === "PROKER");
             if (prokerGroup.length === 0) return null;
             return (
@@ -258,7 +273,7 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
           })()}
 
           {/* Tabel dikelompokkan per pasangan hierarki (PERIODIC) */}
-          {HIERARCHY_PAIRS.map(({ evaluatorRole, evaluateeRole }) => {
+          {(filterParam === "all" || filterParam === "periodic") && HIERARCHY_PAIRS.map(({ evaluatorRole, evaluateeRole }) => {
             const group = (indicatorsData as any[]).filter(
               (i) => i.type !== "PROKER" && i.evaluatorRole === evaluatorRole && i.evaluateeRole === evaluateeRole
             );
