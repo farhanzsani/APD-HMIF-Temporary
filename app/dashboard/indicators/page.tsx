@@ -120,10 +120,10 @@ export default async function IndicatorsPage({ searchParams }: IndicatorsPagePro
   const error = params?.error ? decodeURIComponent(params.error) : undefined;
   const alert = (params?.alert as "success" | "error" | "info") ?? (error ? "error" : "success");
 
-  const totalIndicators = indicators.length;
-  const activeIndicators = indicators.filter((i: any) => !!i.isActive).length;
-  const hardCount = indicators.filter((i: any) => i.category === "hard").length;
-  const softCount = indicators.filter((i: any) => i.category === "soft").length;
+  const totalIndicators = indicatorsData.length;
+  const activeIndicators = indicatorsData.filter((i: any) => !!i.isActive).length;
+  const hardCount = indicatorsData.filter((i: any) => i.category === "hard").length;
+  const softCount = indicatorsData.filter((i: any) => i.category === "soft").length;
 
   const sidebarStyle = {
     "--sidebar-width": "calc(var(--spacing) * 72)",
