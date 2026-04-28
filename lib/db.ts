@@ -31,7 +31,7 @@ export const client =
 
 // Save client instance in global for non-production environments
 if (process.env.NODE_ENV !== "production") {
-    globalForDb.conn = pool;
+    globalForDb.conn = client;
 }
 
 export const db = drizzle(client, { schema, mode: "default" });

@@ -98,7 +98,7 @@ export async function getEventReport(eventId: string, session: Session) {
       division: string | null;
       raterCount: number;
       overallAvg: number;
-      indicators: Array<{ id: string; name: string; avg: number }>;
+      indicators: Array<{ id: string; name: string; category: string; avg: number }>;
       feedback: string[];
     }
   > = {};
@@ -126,11 +126,7 @@ export async function getEventReport(eventId: string, session: Session) {
     const avgScore = ev.scores.length ? totalScore / ev.scores.length : 0;
     bucket.overallAvg += avgScore;
 
-    for (const s of ev.scores) {
-      if (!s.indicatorSnapshot?.indicator) continue;
-      const cat = s.indicatorSnapshot.indicator.category ?? "Uncategorized";
-      bucket.categoryAvg[cat] = (bucket.categoryAvg[cat] ?? 0) + (s.score ?? 0);
-    }
+
 
     for (const s of ev.scores) {
       if (!s.indicatorSnapshot?.indicator) continue;

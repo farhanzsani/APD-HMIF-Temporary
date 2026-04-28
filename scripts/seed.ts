@@ -92,6 +92,7 @@ async function seedIndicators() {
         name: ind.name,
         evaluatorRole: ind.evaluatorRole,
         evaluateeRole: ind.evaluateeRole,
+        category: "hard",
       });
     }
   }
@@ -106,6 +107,7 @@ async function seedIndicators() {
         id: crypto.randomUUID(),
         name: ind.name,
         type: ind.type,
+        category: "hard",
       });
     }
   }

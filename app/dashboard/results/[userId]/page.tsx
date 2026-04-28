@@ -117,7 +117,7 @@ export default async function MemberDetailPage({ params, searchParams }: PagePro
                     </div>
 
                     {/* Per indicator */}
-                    {allIndicators.length > 0 && (
+                    {memberResult.indicators.length > 0 && (
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-base">Per Indikator</CardTitle>
@@ -125,7 +125,7 @@ export default async function MemberDetailPage({ params, searchParams }: PagePro
                             </CardHeader>
                             <CardContent>
                                 <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                                    {allIndicators.map((ind) => (
+                                    {memberResult.indicators.map((ind) => (
                                         <div key={ind.id} className="border-border/60 rounded-lg border px-4 py-3">
                                             <p className="text-sm font-medium leading-snug">{ind.name}</p>
                                             <p className="text-2xl font-semibold tabular-nums mt-1">{ind.avg.toFixed(2)}</p>

@@ -20,6 +20,7 @@ import { SuccessAlert } from "@/components/success-alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getSession } from "@/lib/auth";
@@ -27,6 +28,13 @@ import { canManageRoles } from "@/lib/permissions";
 import { createUserSchema, updateUserSchema } from "@/lib/validation";
 
 type UsersPageProps = { searchParams: Promise<Record<string, string | undefined>> };
+const roles = [
+  { label: "Admin", value: "ADMIN" },
+  { label: "BPI", value: "BPI" },
+  { label: "Kepala Divisi", value: "KADIV" },
+  { label: "Kepala Sub Divisi", value: "KASUBDIV" },
+  { label: "Anggota", value: "ANGGOTA" },
+];
 
 export default async function UsersPage({ searchParams }: UsersPageProps) {
   const params = await searchParams;
@@ -173,7 +181,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
     redirect(`/dashboard/users?success=${encodeURIComponent("User dihapus")}&alert=success`);
   }
 
-  const [activePeriod, periodsData, divisionsData, allUsersData, currentUser] = await Promise.all([
+  const [activePeriod, periodsData, divisionsData, subdivisionsData, allUsersData, currentUser] = await Promise.all([
     db.query.periods.findFirst({ where: eq(periods.isActive, 1), orderBy: [desc(periods.startYear)] }),
     db.query.periods.findMany({ orderBy: [desc(periods.startYear)] }),
     db.query.divisions.findMany({ orderBy: [asc(divisionsTable.name)], with: { users: { columns: { id: true } } } }),

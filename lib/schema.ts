@@ -93,6 +93,9 @@ export const indicators = mysqlTable("indicator", {
     id: varchar("id", { length: 36 }).primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     category: varchar("category", { length: 255 }).notNull(),
+    type: mysqlEnum("type", ["PERIODIC", "PROKER"]).notNull().default("PERIODIC"),
+    evaluatorRole: mysqlEnum("evaluatorRole", ["ADMIN", "BPI", "KADIV", "ANGGOTA", "KASUBDIV"]),
+    evaluateeRole: mysqlEnum("evaluateeRole", ["ADMIN", "BPI", "KADIV", "ANGGOTA", "KASUBDIV"]),
     isActive: tinyint("isActive").notNull().default(1),
     createdAt: timestamp("createdAt").notNull().defaultNow(),
 });

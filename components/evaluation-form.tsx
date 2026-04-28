@@ -9,7 +9,7 @@ interface EvaluationItem {
     id: string;
     evaluatee: { name: string; division: { name: string } | null };
     event: {
-        isOpen: number;
+        isOpen: boolean;
         indicators: Array<{
             id: string;
             indicator: { name: string };
@@ -19,7 +19,7 @@ interface EvaluationItem {
 
 interface EvaluationFormProps {
     pending: EvaluationItem[];
-    eventIsOpen: number;
+    eventIsOpen: boolean;
     submitAction: (formData: FormData) => Promise<void>;
 }
 
